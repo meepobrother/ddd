@@ -1,0 +1,133 @@
+:host {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  #mountNode {
+    flex: 1;
+  }
+}
+
+.header-navs {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  height: 50px;
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  padding: 0 20px;
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    input {
+      height: 30px;
+      border: none;
+      padding: 0 10px;
+      outline: none;
+      width: 200px;
+      font-size: 16px;
+    }
+  }
+  ul {
+    li {
+      line-height: 50px;
+      padding: 0 10px;
+      cursor: pointer;
+    }
+  }
+}
+
+.left-slide {
+  position: fixed;
+  top: 51px;
+  left: 0px;
+  bottom: 0px;
+  background-color: #fff;
+  ul {
+    flex-direction: column;
+    li {
+      text-align: center;
+      padding: 0 20px;
+      height: 30px;
+      line-height: 30px;
+      cursor: pointer;
+    }
+  }
+}
+
+.right-slide {
+  position: fixed;
+  top: 51px;
+  right: 0px;
+  bottom: 0px;
+  background-color: #fff;
+  width: 100px;
+}
+
+.tabs {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  height: 60px;
+  z-index: 10;
+  display: flex;
+  padding: 0 30px;
+  .content {
+    flex: 1;
+  }
+  ul {
+    li {
+      padding: 0 10px;
+      cursor: pointer;
+      line-height: 60px;
+      height: 60px;
+    }
+  }
+}
+
+.charts {
+  position: fixed;
+  width: 300px;
+  right: 20px;
+  top: 80px;
+  z-index: 10;
+  .footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 5px;
+    .content {
+      flex: 1;
+    }
+    input {
+      height: 30px;
+      line-height: 30px;
+      border: none;
+      outline: none;
+      background-color: #efefef;
+      margin: 0px;
+      padding: 0 10px;
+      width: 200px;
+    }
+    button {
+      height: 30px;
+      line-height: 30px;
+      border: none;
+      outline: none;
+      background-color: #001398;
+      color: #000;
+      width: 80px;
+      cursor: pointer;
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+}
