@@ -1,0 +1,75 @@
+export type Shapes = 'domain' | 'diamond' | 'circle' | 'ellipse' | 'image' | 'modelRect' | 'star' | 'triangle' | 'rect';
+export interface Button {
+    title: string;
+    color: string;
+    shape: Shapes;
+}
+export const types: Button[] = [{
+    title: '核心子域',
+    color: '#ff2121',
+    shape: 'domain'
+}, {
+    title: '子域',
+    color: '#006e54',
+    shape: 'domain'
+}, {
+    title: '界限上下文',
+    color: '#006e54',
+    shape: 'domain'
+}, {
+    title: '实体',
+    color: '#006e54',
+    shape: 'domain'
+}, {
+    title: '值对象',
+    color: '#006e54',
+    shape: 'domain'
+}, {
+    title: '聚合',
+    color: '#006e54',
+    shape: 'domain'
+}, {
+    title: '聚合根',
+    color: '#006e54',
+    shape: 'domain'
+}, {
+    title: '服务',
+    color: '#006e54',
+    shape: 'domain'
+}, {
+    title: '仓库',
+    color: '#006e54',
+    shape: 'domain'
+}, {
+    title: '工厂',
+    color: '#006e54',
+    shape: 'domain'
+}, {
+    title: '贴事件',
+    color: '#fa8b44',
+    shape: 'domain'
+}, {
+    title: '警告信息',
+    color: 'rgb(255, 0, 122)',
+    shape: 'circle'
+}, {
+    title: '小报事贴',
+    color: '#eed33c',
+    shape: 'rect'
+}, {
+    title: '核心业务',
+    color: '#9ed5ea',
+    shape: 'modelRect'
+}, {
+    title: '贴热点',
+    color: '#e8539a',
+    shape: 'rect'
+}, {
+    title: '外部系统',
+    color: '#eea4c2',
+    shape: 'triangle'
+}, {
+    title: '商业机会',
+    color: '#60a89e',
+    shape: 'star'
+}];
