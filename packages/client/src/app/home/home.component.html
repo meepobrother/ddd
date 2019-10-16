@@ -1,23 +1,10 @@
 <div class="tabs">
-    <ul>
-        <!-- <li>总览</li> -->
-        <!-- <li>设计</li> -->
-    </ul>
     <div class="content"></div>
-    <ul>
-        <!-- <li>专家</li> -->
-        <!-- <li>产品</li> -->
-        <!-- <li>开发</li> -->
-        <!-- <li>测试</li> -->
-        <!-- <li>运维</li> -->
-    </ul>
 </div>
-<!-- <div style="height: 60px;"></div> -->
 <div id="mountNode" appCanvas (emitInit)="onEmitInit($event)"></div>
 <div class="charts">
     <div class="footer" *ngFor="let it of btns">
         <div class="content"></div>
-        <!-- <input type="text"> -->
         <button (click)="addNode(it)" [style.backgroundColor]="it.color">{{it.title}}</button>
     </div>
 </div>

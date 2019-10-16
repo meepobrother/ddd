@@ -20,29 +20,40 @@ console.log({
 export class HomeComponent implements OnInit {
     graph: any;
     data: any = {
-        edges: [],
         nodes: [],
-        groups: [{
-            id: 'nogroup',
-            title: '未分组',
-            parentId: 'main'
-        }, {
-            id: 'main',
-            title: '主分组'
-        }]
+        groups: [],
+        edges: []
     };
     btns: Button[] = types;
-    constructor(@Inject(DOCUMENT) public doc: Document) {
-        const data = localStorage.getItem('graph');
-        if (data) {
-            this.data = JSON.parse(data);
-        }
+    inited: boolean = false;
+    constructor(@Inject(DOCUMENT) public doc: Document) { }
+    private initSocket() {
+        this.socket = new WebSocket('ws://192.168.1.4:3000');
+        this.socket.onopen = () => {
+            this.send(`app.init`, {});
+            this.socket.onmessage = (event: MessageEvent) => {
+                if (this.graph) {
+                    try {
+                        let data = JSON.parse(event.data);
+                        if (typeof data.event === 'string') {
+                            data = data.data;
+                        }
+                        this.data = data;
+                        this.inited = true;
+                        this.graph.changeData(data);
+                    } catch (e) {
+                        console.log(e.message);
+                    }
+                }
+            };
+        };
     }
     onEmitInit(client: any) {
+        this.initSocket();
         const graph = new G6.Graph({
             container: 'mountNode',
-            width: client.width,
-            height: client.height,
+            width: 3000,
+            height: 3000,
             defaultNode: {
                 shape: 'domain'
             },
@@ -64,9 +75,9 @@ export class HomeComponent implements OnInit {
                 minimap
             ]
         });
-        graph.data(this.data);  // 读取 Step 2 中的数据源到图上
-        graph.render();    // 渲染图
         this.graph = graph;
+        this.graph.data(this.data);
+        this.graph.render();
         this.graph.on('node:dragend', (evt: MouseEvent) => {
             this._save();
         });
@@ -80,20 +91,36 @@ export class HomeComponent implements OnInit {
             console.log(`mouse leave`);
         });
     }
-
+    socket: WebSocket;
     ngOnInit() { }
 
+    send(event: string, data: any) {
+        this.socket.send(
+            JSON.stringify({
+                event,
+                data,
+            })
+        );
+    }
+
     addNode(it: any) {
+        if (!this.inited) {
+            return;
+        }
         const node: any = {
             id: new Date().getTime(),
-            x: 100,
-            y: 60,
+            x: 150,
+            y: 100,
             label: it.title,
             style: {
                 fill: it.color
             },
-            shape: it.shape,
-            groupId: 'nogroup'
+            labelCfg: {
+                style: {
+                    fill: '#fff'
+                }
+            },
+            shape: it.shape
         };
         this.data.nodes.push(node);
         this.graph.changeData(this.data);
@@ -102,6 +129,6 @@ export class HomeComponent implements OnInit {
 
     private _save() {
         const data = this.graph.save();
-        localStorage.setItem(`graph`, JSON.stringify(data));
+        this.send(`app.save`, data);
     }
 }

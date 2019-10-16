@@ -7,47 +7,47 @@ export interface Button {
 export const types: Button[] = [{
     title: '核心子域',
     color: '#ff2121',
-    shape: 'domain'
+    shape: 'rect'
 }, {
     title: '子域',
     color: '#006e54',
-    shape: 'domain'
+    shape: 'rect'
 }, {
     title: '界限上下文',
     color: '#006e54',
-    shape: 'domain'
+    shape: 'rect'
 }, {
     title: '实体',
     color: '#006e54',
-    shape: 'domain'
+    shape: 'rect'
 }, {
     title: '值对象',
     color: '#006e54',
-    shape: 'domain'
+    shape: 'rect'
 }, {
     title: '聚合',
     color: '#006e54',
-    shape: 'domain'
+    shape: 'rect'
 }, {
     title: '聚合根',
     color: '#006e54',
-    shape: 'domain'
+    shape: 'rect'
 }, {
     title: '服务',
     color: '#006e54',
-    shape: 'domain'
+    shape: 'rect'
 }, {
     title: '仓库',
     color: '#006e54',
-    shape: 'domain'
+    shape: 'rect'
 }, {
     title: '工厂',
     color: '#006e54',
-    shape: 'domain'
+    shape: 'rect'
 }, {
     title: '贴事件',
     color: '#fa8b44',
-    shape: 'domain'
+    shape: 'rect'
 }, {
     title: '警告信息',
     color: 'rgb(255, 0, 122)',
