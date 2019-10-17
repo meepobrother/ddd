@@ -46,10 +46,11 @@ export class HomeComponent implements OnInit {
     }
     onEmitInit(client: any) {
         this.initSocket();
+        const rect = this.doc.body.getBoundingClientRect();
         const graph = new G6.Graph({
             container: 'mountNode',
-            width: client.width,
-            height: client.height,
+            width: rect.width,
+            height: rect.height,
             defaultNode: {
                 shape: 'circleNode'
             },
@@ -61,9 +62,11 @@ export class HomeComponent implements OnInit {
                     'drag-canvas',
                     // 'zoom-canvas',
                     // 'drag-node',
+                    'click-select',
                     'drag-group',
                     'drag-node-with-group',
-                    'collapse-expand-group'
+                    'collapse-expand-group',
+                    'activate-relations'
                 ]
             },
             plugins: []
@@ -75,10 +78,7 @@ export class HomeComponent implements OnInit {
             this._save();
         });
         this.graph.on(`node:contextmenu`, (evt: MouseEvent) => {
-            console.log({
-                evt
-            });
-            this._showContextMenu((evt as any).item, evt.clientX, evt.clientY);
+            this._showContextMenu((evt as any).item, evt.x, evt.y);
         });
         this.graph.on(`node:mouseleave`, (evt: MouseEvent) => {
             console.log(`mouse leave`);
@@ -88,6 +88,12 @@ export class HomeComponent implements OnInit {
         });
         this.graph.on(`node:click`, (evt: MouseEvent) => {
             this._selectNode((evt as any).item);
+        });
+        this.graph.on(`canvas:dragend`, (evt: MouseEvent) => {
+            console.log({
+                evt,
+                graph: this.graph
+            });
         });
         this.graph.on(`click`, (evt: MouseEvent) => {
             this.showContextMenu = false;
