@@ -1,12 +1,9 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import G6 from '@antv/g6';
 import { DOCUMENT } from '@angular/common';
-import * as g6 from '@antv/g6';
 import { types, Button } from '../domain/data/types';
 import '../domain/shape/index';
-console.log({
-    g6
-});
+import '../domain/plugins/index';
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
@@ -63,7 +60,10 @@ export class HomeComponent implements OnInit {
                     // 'zoom-canvas',
                     // 'drag-node',
                     'click-select',
-                    'drag-group',
+                    ['drag-group', {
+                        multiple: true,
+                        keyCode: 17
+                    }],
                     'drag-node-with-group',
                     'collapse-expand-group',
                     'activate-relations'
@@ -85,9 +85,6 @@ export class HomeComponent implements OnInit {
         });
         this.graph.on(`node:dblclick`, (evt: MouseEvent) => {
             this._editNodeLabel((evt as any).item, evt.x, evt.y);
-        });
-        this.graph.on(`node:click`, (evt: MouseEvent) => {
-            this._selectNode((evt as any).item);
         });
         this.graph.on(`canvas:dragend`, (evt: MouseEvent) => {
             console.log({
@@ -143,7 +140,8 @@ export class HomeComponent implements OnInit {
             label: it.title,
             size: [100, 60],
             style: {
-                fill: it.color
+                fill: it.color,
+                stroke: `none`
             },
             labelCfg: {
                 style: {
