@@ -1,14 +1,9 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import G6 from '@antv/g6';
-import Grid from '@antv/g6/build/Grid';
 import { DOCUMENT } from '@angular/common';
 import * as g6 from '@antv/g6';
-import Minimap from '@antv/g6/build/minimap';
 import { types, Button } from '../domain/data/types';
-import '../domain/shape/domain';
-const minimap = new Minimap({
-    size: [window.innerHeight / 4, window.innerHeight / 4]
-});
+import '../domain/shape/index';
 console.log({
     g6
 });
@@ -26,9 +21,10 @@ export class HomeComponent implements OnInit {
     };
     btns: Button[] = types;
     inited: boolean = false;
+
     constructor(@Inject(DOCUMENT) public doc: Document) { }
     private initSocket() {
-        this.socket = new WebSocket('ws://192.168.1.4:3000');
+        this.socket = new WebSocket('ws://10.0.0.4:3000');
         this.socket.onopen = () => {
             this.send(`app.init`, {});
             this.socket.onmessage = (event: MessageEvent) => {
@@ -52,10 +48,10 @@ export class HomeComponent implements OnInit {
         this.initSocket();
         const graph = new G6.Graph({
             container: 'mountNode',
-            width: 3000,
-            height: 3000,
+            width: client.width,
+            height: client.height,
             defaultNode: {
-                shape: 'domain'
+                shape: 'circleNode'
             },
             defaultEdge: {
                 color: '#000'
@@ -64,16 +60,13 @@ export class HomeComponent implements OnInit {
                 default: [
                     'drag-canvas',
                     // 'zoom-canvas',
-                    'drag-node',
+                    // 'drag-node',
                     'drag-group',
                     'drag-node-with-group',
                     'collapse-expand-group'
                 ]
             },
-            plugins: [
-                new Grid(),
-                minimap
-            ]
+            plugins: []
         });
         this.graph = graph;
         this.graph.data(this.data);
@@ -83,26 +76,56 @@ export class HomeComponent implements OnInit {
         });
         this.graph.on(`node:contextmenu`, (evt: MouseEvent) => {
             console.log({
-                x: evt.x,
-                y: evt.y
+                evt
             });
+            this._showContextMenu((evt as any).item, evt.clientX, evt.clientY);
         });
         this.graph.on(`node:mouseleave`, (evt: MouseEvent) => {
             console.log(`mouse leave`);
         });
+        this.graph.on(`node:dblclick`, (evt: MouseEvent) => {
+            this._editNodeLabel((evt as any).item, evt.x, evt.y);
+        });
+        this.graph.on(`node:click`, (evt: MouseEvent) => {
+            this._selectNode((evt as any).item);
+        });
+        this.graph.on(`click`, (evt: MouseEvent) => {
+            this.showContextMenu = false;
+            this.showEditNode = false;
+            this.currentEditNode = undefined;
+        });
+        this.graph.on(`contextmenu`, (evt: MouseEvent) => {
+            console.log({
+                evt
+            });
+        });
     }
+
     socket: WebSocket;
     ngOnInit() { }
-
-    send(event: string, data: any) {
-        this.socket.send(
-            JSON.stringify({
-                event,
-                data,
-            })
-        );
+    /**
+     * node
+     */
+    showEditNode: boolean = false;
+    showEditNodeX: number;
+    showEditNodeY: number;
+    currentEditNode: any;
+    currentEditConfig: any;
+    _selectNode(node: any) {
+        this.currentEditNode = node;
     }
-
+    _editNodeLabel(item: any, x: number, y: number) {
+        this.showEditNode = true;
+        this.showContextMenu = false;
+        this.showEditNodeX = x;
+        this.showEditNodeY = y;
+        this.currentEditNode = item;
+        this.currentEditConfig = item.getModel();
+    }
+    _updateNodeLabel(cfg: any) {
+        this.graph.updateItem(this.currentEditNode, cfg);
+        this._save();
+    }
     addNode(it: any) {
         if (!this.inited) {
             return;
@@ -112,12 +135,13 @@ export class HomeComponent implements OnInit {
             x: 150,
             y: 100,
             label: it.title,
+            size: [100, 60],
             style: {
                 fill: it.color
             },
             labelCfg: {
                 style: {
-                    fill: '#fff'
+                    fill: '#ffffff'
                 }
             },
             shape: it.shape
@@ -126,9 +150,48 @@ export class HomeComponent implements OnInit {
         this.graph.changeData(this.data);
         this._save();
     }
+    deleteNode() {
+        try {
+            this.graph.removeItem(this.currentEditNode);
+            this._hideContextMenu();
+            this._save();
+        } catch (e) {
+            console.log({
+                graph: this.graph
+            });
+        }
+    }
+    /**
+     * node结束
+     */
+    send(event: string, data: any) {
+        this.socket.send(
+            JSON.stringify({
+                event,
+                data,
+            })
+        );
+    }
 
     private _save() {
         const data = this.graph.save();
         this.send(`app.save`, data);
+    }
+    /**
+     * 右键菜单
+     */
+    showContextMenu: boolean = false;
+    contextMenuX: number;
+    contextMenuY: number;
+    _showContextMenu(node: any, x: number, y: number) {
+        this.currentEditNode = node;
+        this.showContextMenu = true;
+        this.contextMenuX = x;
+        this.contextMenuY = y;
+        this.showEditNode = false;
+    }
+
+    _hideContextMenu() {
+        this.showContextMenu = false;
     }
 }

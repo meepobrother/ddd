@@ -4,24 +4,16 @@ import { Shape } from '@antv/g6';
  */
 Shape.registerNode('domain', {
     draw: (cfg, group) => {
-        const keyShape = group.addShape('circle', {
+        const shape = group.addShape('circle', {
             attrs: {
                 x: 0,
                 y: 0,
-                r: 30,
-                fill: '#000'
+                r: 300,
+                lineWidth: 2,
+                stroke: '#b5b5b5',
+                fill: '#87e8de'
             }
         });
-        group.addShape('text', {
-            attrs: {
-                x: 0,
-                y: 0,
-                textAlign: 'center',
-                textBaseline: 'middle',
-                text: cfg.label,
-                fill: '#666'
-            }
-        });
-        return keyShape;
+        return shape;
     }
 }, 'circle');

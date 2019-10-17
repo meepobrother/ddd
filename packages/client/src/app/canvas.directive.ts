@@ -1,5 +1,6 @@
 import { Directive, ElementRef, OnInit, Inject, Output, EventEmitter } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { fromEvent } from 'rxjs';
 
 @Directive({
     selector: '[appCanvas]'
@@ -16,5 +17,4 @@ export class CanvasDirective implements OnInit {
         const client = this.element.nativeElement.getBoundingClientRect();
         this.emitInit.emit(client);
     }
-
 }

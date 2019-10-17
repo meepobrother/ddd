@@ -71,5 +71,5 @@ export const types: Button[] = [{
 }, {
     title: '商业机会',
     color: '#60a89e',
-    shape: 'star'
+    shape: 'domain'
 }];

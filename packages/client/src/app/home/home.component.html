@@ -8,3 +8,35 @@
         <button (click)="addNode(it)" [style.backgroundColor]="it.color">{{it.title}}</button>
     </div>
 </div>
+<div class="context-menu" *ngIf="showContextMenu" [style.left.px]="contextMenuX" [style.top.px]="contextMenuY">
+    <ul>
+        <li class="delete" (click)="deleteNode()">删除</li>
+    </ul>
+</div>
+
+<div class="edit-node" *ngIf="showEditNode" [style.left.px]="showEditNodeX" [style.top.px]="showEditNodeY">
+    <div class="label">
+        <div class="title">标题</div>
+        <input type="text" [(ngModel)]="currentEditConfig.label" (ngModelChange)="_updateNodeLabel(currentEditConfig)">
+    </div>
+    <div class="label">
+        <div class="title">宽度</div>
+        <input type="number" [(ngModel)]="currentEditConfig.size[0]"
+            (ngModelChange)="_updateNodeLabel(currentEditConfig)">
+    </div>
+    <div class="label">
+        <div class="title">高度</div>
+        <input type="number" [(ngModel)]="currentEditConfig.size[1]"
+            (ngModelChange)="_updateNodeLabel(currentEditConfig)">
+    </div>
+    <div class="label">
+        <div class="title">背景色</div>
+        <input type="color" [(ngModel)]="currentEditConfig.style.fill"
+            (ngModelChange)="_updateNodeLabel(currentEditConfig)">
+    </div>
+    <div class="label">
+        <div class="title">前景色</div>
+        <input type="color" [(ngModel)]="currentEditConfig.labelCfg.style.fill"
+            (ngModelChange)="_updateNodeLabel(currentEditConfig)">
+    </div>
+</div>
