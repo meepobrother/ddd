@@ -18,20 +18,23 @@ let AppController = class AppController {
         this.path = path_1.join(__dirname, '../data');
     }
     get file() {
-        return path_1.join(this.path, 'domain.json');
+        return path_1.join(this.path, 'domain.xml');
     }
     appInit() {
-        if (fs_extra_1.existsSync(this.file)) {
-            return JSON.parse(fs_extra_1.readFileSync(this.file).toString('utf8'));
+        const file = path_1.join(this.path, 'domain.xml');
+        if (fs_extra_1.existsSync(file)) {
+            return {
+                data: fs_extra_1.readFileSync(file).toString('utf8')
+            };
         }
         else {
-            return {};
+            return ``;
         }
     }
     appSave(client, data) {
         try {
             fs_extra_1.ensureDirSync(this.path);
-            fs_extra_1.writeFileSync(this.file, JSON.stringify(data));
+            fs_extra_1.writeFileSync(this.file, data);
             this.server.clients.forEach((client) => client.send(JSON.stringify({
                 event: `app.update`,
                 data,

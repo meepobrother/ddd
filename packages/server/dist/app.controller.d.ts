@@ -3,6 +3,8 @@ export declare class AppController {
     server: Server;
     path: string;
     readonly file: string;
-    appInit(): any;
+    appInit(): "" | {
+        data: string;
+    };
     appSave(client: any, data: any): void;
 }
