@@ -29,21 +29,8 @@ export class AppComponent implements OnInit {
     ui: any;
     constructor(@Inject(DOCUMENT) public doc: Document, public ele: ElementRef<HTMLDivElement>) { }
     private initSocket() {
-        this.codec = new mxObjectCodec(new CustomData());
-        this.codec.encode = (enc, obj) => {
-            const node = enc.document.createElement('CustomData');
-            mxUtils.setTextContent(node, JSON.stringify(obj));
-            return node;
-        };
-        this.codec.decode = (dec, node, into) => {
-            const obj = JSON.parse(mxUtils.getTextContent(node));
-            obj.constructor = CustomData;
-            return obj;
-        };
         this.socket = new WebSocket('ws://localhost:3000');
-        console.log(`socket`);
         this.socket.onopen = () => {
-            console.log(`on open`);
             this.send(`app.init`, {});
             (window as any).send = (event: string, data: any) => {
                 this.send(event, data);
