@@ -50,12 +50,8 @@ Actions.prototype.init = function () {
         });
     }).isEnabled = isGraphEnabled;
     this.addAction('save', function () {
-        var encoder = new mxCodec();
-        var node = encoder.encode(graph.getModel());
-        var xml = mxUtils.getXml(node);
-        const _evt = new Event(`save`, { bubbles: true, cancelable: false })
-        _evt.data = xml;
-        window.document.dispatchEvent(_evt);
+        window._autosave && window._autosave();
+        // ui.save();
     }, null, null, Editor.ctrlKey + '+S').isEnabled = isGraphEnabled;
     this.addAction('saveAs...', function () { ui.saveFile(true); }, null, null, Editor.ctrlKey + '+Shift+S').isEnabled = isGraphEnabled;
     this.addAction('export...', function () { ui.showDialog(new ExportDialog(ui).container, 300, 296, true, true); });
@@ -69,14 +65,27 @@ Actions.prototype.init = function () {
     this.addAction('preview', function () { mxUtils.show(graph, null, 10, 10); });
 
     // Edit actions
-    this.addAction('undo', function () { ui.undo(); }, null, 'sprite-undo', Editor.ctrlKey + '+Z');
-    this.addAction('redo', function () { ui.redo(); }, null, 'sprite-redo', (!mxClient.IS_WIN) ? Editor.ctrlKey + '+Shift+Z' : Editor.ctrlKey + '+Y');
-    this.addAction('cut', function () { mxClipboard.cut(graph); }, null, 'sprite-cut', Editor.ctrlKey + '+X');
-    this.addAction('copy', function () { mxClipboard.copy(graph); }, null, 'sprite-copy', Editor.ctrlKey + '+C');
+    this.addAction('undo', function () {
+        ui.undo();
+        
+    }, null, 'sprite-undo', Editor.ctrlKey + '+Z');
+    this.addAction('redo', function () {
+        ui.redo();
+        
+    }, null, 'sprite-redo', (!mxClient.IS_WIN) ? Editor.ctrlKey + '+Shift+Z' : Editor.ctrlKey + '+Y');
+    this.addAction('cut', function () {
+        mxClipboard.cut(graph);
+        
+    }, null, 'sprite-cut', Editor.ctrlKey + '+X');
+    this.addAction('copy', function () {
+        mxClipboard.copy(graph);
+        
+    }, null, 'sprite-copy', Editor.ctrlKey + '+C');
     this.addAction('paste', function () {
         if (graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent())) {
             mxClipboard.paste(graph);
         }
+        
     }, false, 'sprite-paste', Editor.ctrlKey + '+V');
     this.addAction('pasteHere', function (evt) {
         if (graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent())) {
@@ -118,6 +127,7 @@ Actions.prototype.init = function () {
             finally {
                 graph.getModel().endUpdate();
             }
+            
         }
     });
 
@@ -131,6 +141,7 @@ Actions.prototype.init = function () {
                 ui.copiedSize = new mxRectangle(geo.x, geo.y, geo.width, geo.height);
             }
         }
+        
     }, null, null, 'Alt+Shit+X');
 
     this.addAction('pasteSize', function (evt) {
@@ -157,6 +168,7 @@ Actions.prototype.init = function () {
             finally {
                 graph.getModel().endUpdate();
             }
+            
         }
     }, null, null, 'Alt+Shit+V');
 
@@ -188,17 +200,23 @@ Actions.prototype.init = function () {
 
     this.addAction('delete', function (evt) {
         deleteCells(evt != null && mxEvent.isShiftDown(evt));
+        
     }, null, null, 'Delete');
     this.addAction('deleteAll', function () {
         deleteCells(true);
+        
     }, null, null, Editor.ctrlKey + '+Delete');
     this.addAction('duplicate', function () {
         graph.setSelectionCells(graph.duplicateCells());
+        
     }, null, null, Editor.ctrlKey + '+D');
     this.put('turn', new Action(mxResources.get('turn') + ' / ' + mxResources.get('reverse'), function () {
         graph.turnShapes(graph.getSelectionCells());
+        
     }, null, null, Editor.ctrlKey + '+R'));
-    this.addAction('selectVertices', function () { graph.selectVertices(); }, null, null, Editor.ctrlKey + '+Shift+I');
+    this.addAction('selectVertices', function () {
+        graph.selectVertices();
+    }, null, null, Editor.ctrlKey + '+Shift+I');
     this.addAction('selectEdges', function () { graph.selectEdges(); }, null, null, Editor.ctrlKey + '+Shift+E');
     this.addAction('selectAll', function () { graph.selectAll(null, true); }, null, null, Editor.ctrlKey + '+A');
     this.addAction('selectNone', function () { graph.clearSelection(); }, null, null, Editor.ctrlKey + '+Shift+A');
@@ -218,18 +236,34 @@ Actions.prototype.init = function () {
                 graph.getModel().endUpdate();
             }
         }
+        
     }, null, null, Editor.ctrlKey + '+L');
 
     // Navigation actions
     this.addAction('home', function () { graph.home(); }, null, null, 'Home');
-    this.addAction('exitGroup', function () { graph.exitGroup(); }, null, null, Editor.ctrlKey + '+Shift+Home');
+    this.addAction('exitGroup', function () {
+        graph.exitGroup();
+        
+    }, null, null, Editor.ctrlKey + '+Shift+Home');
     this.addAction('enterGroup', function () { graph.enterGroup(); }, null, null, Editor.ctrlKey + '+Shift+End');
-    this.addAction('collapse', function () { graph.foldCells(true); }, null, null, Editor.ctrlKey + '+Home');
-    this.addAction('expand', function () { graph.foldCells(false); }, null, null, Editor.ctrlKey + '+End');
+    this.addAction('collapse', function () {
+        graph.foldCells(true);
+        
+    }, null, null, Editor.ctrlKey + '+Home');
+    this.addAction('expand', function () {
+        graph.foldCells(false);
+        
+    }, null, null, Editor.ctrlKey + '+End');
 
     // Arrange actions
-    this.addAction('toFront', function () { graph.orderCells(false); }, null, null, Editor.ctrlKey + '+Shift+F');
-    this.addAction('toBack', function () { graph.orderCells(true); }, null, null, Editor.ctrlKey + '+Shift+B');
+    this.addAction('toFront', function () {
+        graph.orderCells(false);
+        
+    }, null, null, Editor.ctrlKey + '+Shift+F');
+    this.addAction('toBack', function () {
+        graph.orderCells(true);
+        
+    }, null, null, Editor.ctrlKey + '+Shift+B');
     this.addAction('group', function () {
         if (graph.getSelectionCount() == 1) {
             graph.setCellStyles('container', '1');
@@ -237,6 +271,7 @@ Actions.prototype.init = function () {
         else {
             graph.setSelectionCell(graph.groupCells(null, 0));
         }
+        
     }, null, null, Editor.ctrlKey + '+G');
     this.addAction('ungroup', function () {
         if (graph.getSelectionCount() == 1 && graph.getModel().getChildCount(graph.getSelectionCell()) == 0) {
@@ -245,17 +280,23 @@ Actions.prototype.init = function () {
         else {
             graph.setSelectionCells(graph.ungroupCells());
         }
+        
     }, null, null, Editor.ctrlKey + '+Shift+U');
-    this.addAction('removeFromGroup', function () { graph.removeCellsFromParent(); });
+    this.addAction('removeFromGroup', function () {
+        graph.removeCellsFromParent();
+        
+    });
     // Adds action
     this.addAction('edit', function () {
         if (graph.isEnabled()) {
             graph.startEditingAtCell();
         }
+        
     }, null, null, 'F2/Enter');
     this.addAction('editData...', function () {
         var cell = graph.getSelectionCell() || graph.getModel().getRoot();
         ui.showDataDialog(cell);
+        
     }, null, null, Editor.ctrlKey + '+M');
     this.addAction('editTooltip...', function () {
         var graph = ui.editor.graph;
@@ -278,6 +319,7 @@ Actions.prototype.init = function () {
             ui.showDialog(dlg.container, 320, 200, true, true);
             dlg.init();
         }
+        
     }, null, null, 'Alt+Shift+T');
     this.addAction('openLink', function () {
         var link = graph.getLinkForCell(graph.getSelectionCell());
@@ -298,12 +340,14 @@ Actions.prototype.init = function () {
                 graph.setLinkForCell(cell, (link.length > 0) ? link : null);
             });
         }
+        
     }, null, null, 'Alt+Shift+L');
     this.put('insertImage', new Action(mxResources.get('image') + '...', function () {
         if (graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent())) {
             graph.clearSelection();
             ui.actions.get('image').funct();
         }
+        
     })).isEnabled = isGraphEnabled;
     this.put('insertLink', new Action(mxResources.get('link') + '...', function () {
         if (graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent())) {
@@ -348,6 +392,7 @@ Actions.prototype.init = function () {
                 }
             });
         }
+        
     })).isEnabled = isGraphEnabled;
     this.addAction('link...', mxUtils.bind(this, function () {
         var graph = ui.editor.graph;
@@ -394,6 +439,7 @@ Actions.prototype.init = function () {
                 this.get('editLink').funct();
             }
         }
+        
     })).isEnabled = isGraphEnabled;
     this.addAction('autosize', function () {
         var cells = graph.getSelectionCells();
@@ -427,6 +473,7 @@ Actions.prototype.init = function () {
                 graph.getModel().endUpdate();
             }
         }
+        
     }, null, null, Editor.ctrlKey + '+Shift+Y');
     this.addAction('formattedText', function () {
         var state = graph.getView().getState(graph.getSelectionCell());
@@ -476,6 +523,7 @@ Actions.prototype.init = function () {
                 graph.getModel().endUpdate();
             }
         }
+        
     });
     this.addAction('wordWrap', function () {
         var state = graph.getView().getState(graph.getSelectionCell());
@@ -488,6 +536,7 @@ Actions.prototype.init = function () {
         }
 
         graph.setCellStyles(mxConstants.STYLE_WHITE_SPACE, value);
+        
     });
     this.addAction('rotation', function () {
         var value = '0';
@@ -505,11 +554,13 @@ Actions.prototype.init = function () {
 
         ui.showDialog(dlg.container, 375, 80, true, true);
         dlg.init();
+        
     });
     // View actions
     this.addAction('resetView', function () {
         graph.zoomTo(1);
         ui.resetScrollbars();
+        
     }, null, null, Editor.ctrlKey + '+H');
     this.addAction('zoomIn', function (evt) { graph.zoomIn(); }, null, null, Editor.ctrlKey + ' + (Numpad) / Alt+Mousewheel');
     this.addAction('zoomOut', function (evt) { graph.zoomOut(); }, null, null, Editor.ctrlKey + ' - (Numpad) / Alt+Mousewheel');
@@ -533,6 +584,7 @@ Actions.prototype.init = function () {
             graph.container.scrollLeft = (bounds.x + t.x) * scale -
                 Math.max((cw - bounds.width * scale) / 2 + 5, 0);
         }
+        
     }, null, null, Editor.ctrlKey + '+Shift+H');
     this.addAction('fitPage', mxUtils.bind(this, function () {
         if (!graph.pageVisible) {

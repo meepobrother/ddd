@@ -1,5 +1,7 @@
 import { Component, OnInit, Inject, ElementRef } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { fromEvent, merge } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 declare const RESOURCE_BASE: any;
 declare const mxResources: any;
 declare const Graph: any;
@@ -12,6 +14,7 @@ declare const urlParams: any;
 declare const mxLanguage: any;
 declare const mxCodec: any;
 declare const SERVER_IP: any;
+declare const mxEvent: any;
 export class CustomData {
     constructor(public value?: any) { }
 }
@@ -68,13 +71,16 @@ export class AppComponent implements OnInit {
         );
     }
 
+    _save() {
+        const encoder = new mxCodec();
+        const node = encoder.encode(this.graph.getModel());
+        const xml = mxUtils.getXml(node);
+        const _evt = new Event(`save`, { bubbles: true, cancelable: false });
+        (_evt as any).data = xml;
+        this.send(`app.save`, xml, this.filePath);
+    }
+
     ngOnInit() {
-        console.log({
-            urlParams
-        });
-        this.doc.addEventListener(`save`, (evt: any) => {
-            this.send(`app.save`, evt.data, this.filePath);
-        });
         const editorUiInit = EditorUi.prototype.init;
         EditorUi.prototype.init = function () {
             editorUiInit.apply(this, arguments);
@@ -101,6 +107,15 @@ export class AppComponent implements OnInit {
             const editor = new Editor(urlParams.chrome === '0', themes);
             that.ui = new EditorUi(editor);
             that.editor = editor;
+            that.graph = editor.graph;
+            merge(
+                fromEvent(this.doc, 'mouseup'),
+                fromEvent(this.doc, 'keyup')
+            ).pipe(
+                debounceTime(300)
+            ).subscribe(res => {
+                this._save();
+            });
             this.initSocket();
         });
         console.log(`ng on init`, bundle);
