@@ -42,6 +42,7 @@ export class AppComponent implements OnInit {
                     const graph = this.editor.graph;
                     const res = JSON.parse(event.data);
                     const doc = mxUtils.parseXml(res.data);
+                    this.editor.setAutosave(true);
                     if (doc.documentElement != null && doc.documentElement.nodeName === 'mxGraphModel') {
                         const decoder = new mxCodec(doc);
                         const node = doc.documentElement;
@@ -85,6 +86,7 @@ export class AppComponent implements OnInit {
                 this.actions.get('import').setEnabled(enabled || Graph.fileSupport);
                 this.actions.get('save').setEnabled(true);
                 this.actions.get('saveAs').setEnabled(enabled);
+                this.actions.get('autosave').setEnabled(enabled);
                 this.actions.get('export').setEnabled(enabled);
             }
         };

@@ -13,8 +13,8 @@ export class AppController {
     }
 
     @SubscribeMessage('app.init')
-    appInit(client: any, name: string = `domain`) {
-        const file = join(this.path, `${name}.xml`);
+    appInit(client: any, data: any) {
+        const file = join(this.path, `${data.path}.xml`);
         if (existsSync(file)) {
             return {
                 data: readFileSync(file).toString('utf8'),

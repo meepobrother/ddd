@@ -20,8 +20,9 @@ let AppController = class AppController {
     get file() {
         return path_1.join(this.path, 'domain.xml');
     }
-    appInit(client, name = `domain`) {
-        const file = path_1.join(this.path, `${name}.xml`);
+    appInit(client, data) {
+        const file = path_1.join(this.path, `${data.path}.xml`);
+        console.log({ file });
         if (fs_extra_1.existsSync(file)) {
             return {
                 data: fs_extra_1.readFileSync(file).toString('utf8'),
@@ -53,7 +54,7 @@ __decorate([
 __decorate([
     websockets_1.SubscribeMessage('app.init'),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], AppController.prototype, "appInit", null);
 __decorate([
