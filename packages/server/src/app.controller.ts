@@ -13,11 +13,11 @@ export class AppController {
     }
 
     @SubscribeMessage('app.init')
-    appInit() {
-        const file = join(this.path, 'domain.xml');
+    appInit(client: any, name: string = `domain`) {
+        const file = join(this.path, `${name}.xml`);
         if (existsSync(file)) {
             return {
-                data: readFileSync(file).toString('utf8')
+                data: readFileSync(file).toString('utf8'),
             };
         } else {
             return ``;
@@ -28,10 +28,11 @@ export class AppController {
     appSave(client: any, data: any) {
         try {
             ensureDirSync(this.path);
-            writeFileSync(this.file, data);
+            const file = join(this.path, `${data.path}.xml`);
+            writeFileSync(file, data.data);
             this.server.clients.forEach((client) => client.send(JSON.stringify({
                 event: `app.update`,
-                data,
+                data: data.data,
             })));
         } catch (e) {
             console.log(e.message);

@@ -28,13 +28,14 @@ export class AppComponent implements OnInit {
     codec: any;
     editor: any;
     ui: any;
+    filePath: string = urlParams.file || 'domain';
     constructor(@Inject(DOCUMENT) public doc: Document, public ele: ElementRef<HTMLDivElement>) { }
     private initSocket() {
         this.socket = new WebSocket(`ws://${SERVER_IP}`);
         this.socket.onopen = () => {
-            this.send(`app.init`, {});
+            this.send(`app.init`, this.filePath, this.filePath);
             (window as any).send = (event: string, data: any) => {
-                this.send(event, data);
+                this.send(event, data, this.filePath);
             };
             this.socket.onmessage = (event: MessageEvent) => {
                 if (this.editor) {
@@ -54,18 +55,24 @@ export class AppComponent implements OnInit {
     /**
      * node结束
      */
-    send(event: string, data: any) {
+    send(event: string, data: any, path) {
         this.socket.send(
             JSON.stringify({
                 event,
-                data,
+                data: {
+                    data,
+                    path
+                }
             })
         );
     }
 
     ngOnInit() {
+        console.log({
+            urlParams
+        });
         this.doc.addEventListener(`save`, (evt: any) => {
-            this.send(`app.save`, evt.data);
+            this.send(`app.save`, evt.data, this.filePath);
         });
         const editorUiInit = EditorUi.prototype.init;
         EditorUi.prototype.init = function () {

@@ -20,11 +20,11 @@ let AppController = class AppController {
     get file() {
         return path_1.join(this.path, 'domain.xml');
     }
-    appInit() {
-        const file = path_1.join(this.path, 'domain.xml');
+    appInit(client, name = `domain`) {
+        const file = path_1.join(this.path, `${name}.xml`);
         if (fs_extra_1.existsSync(file)) {
             return {
-                data: fs_extra_1.readFileSync(file).toString('utf8')
+                data: fs_extra_1.readFileSync(file).toString('utf8'),
             };
         }
         else {
@@ -34,10 +34,11 @@ let AppController = class AppController {
     appSave(client, data) {
         try {
             fs_extra_1.ensureDirSync(this.path);
-            fs_extra_1.writeFileSync(this.file, data);
+            const file = path_1.join(this.path, `${data.path}.xml`);
+            fs_extra_1.writeFileSync(file, data.data);
             this.server.clients.forEach((client) => client.send(JSON.stringify({
                 event: `app.update`,
-                data,
+                data: data.data,
             })));
         }
         catch (e) {
@@ -52,7 +53,7 @@ __decorate([
 __decorate([
     websockets_1.SubscribeMessage('app.init'),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], AppController.prototype, "appInit", null);
 __decorate([
