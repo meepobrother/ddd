@@ -11,6 +11,7 @@ declare const STYLE_PATH: any;
 declare const urlParams: any;
 declare const mxLanguage: any;
 declare const mxCodec: any;
+declare const SERVER_IP: any;
 export class CustomData {
     constructor(public value?: any) { }
 }
@@ -29,7 +30,7 @@ export class AppComponent implements OnInit {
     ui: any;
     constructor(@Inject(DOCUMENT) public doc: Document, public ele: ElementRef<HTMLDivElement>) { }
     private initSocket() {
-        this.socket = new WebSocket('ws://localhost:3000');
+        this.socket = new WebSocket(`ws://${SERVER_IP}`);
         this.socket.onopen = () => {
             this.send(`app.init`, {});
             (window as any).send = (event: string, data: any) => {
