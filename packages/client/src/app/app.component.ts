@@ -32,6 +32,8 @@ export class AppComponent implements OnInit {
     editor: any;
     ui: any;
     filePath: string = urlParams.file || 'domain';
+    showTip: boolean = false;
+    loading: boolean = true;
     constructor(@Inject(DOCUMENT) public doc: Document, public ele: ElementRef<HTMLDivElement>) { }
     private initSocket() {
         this.socket = new WebSocket(`ws://${SERVER_IP}`);
@@ -41,15 +43,19 @@ export class AppComponent implements OnInit {
                 this.send(event, data, this.filePath);
             };
             this.socket.onmessage = (event: MessageEvent) => {
+                console.log(`on message`, event);
                 if (this.editor) {
                     const graph = this.editor.graph;
                     const res = JSON.parse(event.data);
                     const doc = mxUtils.parseXml(res.data);
                     this.editor.setAutosave(true);
+                    this.loading = false;
                     if (doc.documentElement != null && doc.documentElement.nodeName === 'mxGraphModel') {
                         const decoder = new mxCodec(doc);
                         const node = doc.documentElement;
                         decoder.decode(node, graph.getModel());
+                        this.doc.head.title = `保存成功`;
+                        this.showTip = true;
                     }
                 }
             };
@@ -60,6 +66,8 @@ export class AppComponent implements OnInit {
      * node结束
      */
     send(event: string, data: any, path) {
+        this.doc.head.title = `发送中`;
+        this.doc.title = `发送中`;
         this.socket.send(
             JSON.stringify({
                 event,
@@ -72,6 +80,8 @@ export class AppComponent implements OnInit {
     }
 
     _save() {
+        this.doc.head.title = `保存中`;
+        this.doc.title = `保存中`;
         const encoder = new mxCodec();
         const node = encoder.encode(this.graph.getModel());
         const xml = mxUtils.getXml(node);
@@ -110,9 +120,11 @@ export class AppComponent implements OnInit {
             that.graph = editor.graph;
             merge(
                 fromEvent(this.doc, 'mouseup'),
-                fromEvent(this.doc, 'keyup')
+                fromEvent(this.doc, 'mousedown'),
+                fromEvent(this.doc, 'keyup'),
+                fromEvent(this.doc, 'keydown')
             ).pipe(
-                debounceTime(300)
+                debounceTime(1500)
             ).subscribe(res => {
                 this._save();
             });

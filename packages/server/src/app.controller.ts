@@ -2,7 +2,8 @@ import { WebSocketServer, SubscribeMessage, WebSocketGateway } from '@nestjs/web
 import { Server } from 'ws';
 import { readFileSync, ensureDirSync, existsSync, writeFileSync } from 'fs-extra';
 import { join } from 'path';
-
+import { defaultsDeep } from 'lodash';
+import * as X2JS from 'x2js';
 @WebSocketGateway()
 export class AppController {
     @WebSocketServer()
@@ -29,10 +30,17 @@ export class AppController {
         try {
             ensureDirSync(this.path);
             const file = join(this.path, `${data.path}.xml`);
-            writeFileSync(file, data.data);
+            const oldData = readFileSync(file).toString('utf8');
+            const newData = data.data;
+            const x2js = new X2JS();
+            const oldJson = x2js.xml2js(oldData);
+            const newJson = x2js.xml2js(newData);
+            const json = defaultsDeep(newJson, oldJson);
+            const fileData = x2js.js2xml(json);
+            writeFileSync(file, fileData);
             this.server.clients.forEach((client) => client.send(JSON.stringify({
                 event: `app.update`,
-                data: data.data,
+                data: fileData,
             })));
         } catch (e) {
             console.log(e.message);

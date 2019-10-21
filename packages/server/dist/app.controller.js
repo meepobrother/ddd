@@ -13,6 +13,8 @@ const websockets_1 = require("@nestjs/websockets");
 const ws_1 = require("ws");
 const fs_extra_1 = require("fs-extra");
 const path_1 = require("path");
+const lodash_1 = require("lodash");
+const X2JS = require("x2js");
 let AppController = class AppController {
     constructor() {
         this.path = path_1.join(__dirname, '../data');
@@ -22,7 +24,6 @@ let AppController = class AppController {
     }
     appInit(client, data) {
         const file = path_1.join(this.path, `${data.path}.xml`);
-        console.log({ file });
         if (fs_extra_1.existsSync(file)) {
             return {
                 data: fs_extra_1.readFileSync(file).toString('utf8'),
@@ -36,10 +37,17 @@ let AppController = class AppController {
         try {
             fs_extra_1.ensureDirSync(this.path);
             const file = path_1.join(this.path, `${data.path}.xml`);
-            fs_extra_1.writeFileSync(file, data.data);
+            const oldData = fs_extra_1.readFileSync(file).toString('utf8');
+            const newData = data.data;
+            const x2js = new X2JS();
+            const oldJson = x2js.xml2js(oldData);
+            const newJson = x2js.xml2js(newData);
+            const json = lodash_1.defaultsDeep(newJson, oldJson);
+            const fileData = x2js.js2xml(json);
+            fs_extra_1.writeFileSync(file, fileData);
             this.server.clients.forEach((client) => client.send(JSON.stringify({
                 event: `app.update`,
-                data: data.data,
+                data: fileData,
             })));
         }
         catch (e) {
