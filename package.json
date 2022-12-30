@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "@types/node": "^12.7.12",
-    "mocha": "^6.2.1",
+    "mocha": "^10.2.0",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^3.6.4"
   }
